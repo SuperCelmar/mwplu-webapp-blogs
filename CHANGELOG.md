@@ -60,3 +60,13 @@
 
 ## 2025-08-19
 - 2025-08-19T22:58:17+02:00 (fllin1) 742fa3d - feat[auth]: Reset password and signup confirmation feature functional
+
+## 2025-09-21
+
+- Added `DevEnvWarning` component to show a dev-only banner prompting to set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local`.
+- Updated `src/services/supabase.js` to export `isSupabaseConfigured` and avoid throwing on import without env vars (no-op proxy until actually used).
+- Guarded `src/stores/auth.js` to skip Supabase initialization and listeners when not configured.
+- Wired the banner into `App.vue` so developers see it only in development.
+- Restored missing `src/components/HelloWorld.vue` to satisfy existing unit test.
+- Tweaked `DevEnvWarning` to a smaller top-right toast matching debug notifications (reduced icon size, compact text).
+ - Docs[blogs]: Enriched `docs/blogs/BLOG_FEATURE_CONTEXT.md` with scope/non-goals, glossary, URLs, content model, editorial workflow, LLM HITL pipeline, SEO checklist, analytics KPIs, UI components, performance, risks, and acceptance criteria.

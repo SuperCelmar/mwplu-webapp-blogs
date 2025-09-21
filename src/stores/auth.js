@@ -14,7 +14,7 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { supabase, dbService } from '@/services/supabase'
+import { supabase, dbService, isSupabaseConfigured } from '@/services/supabase'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -57,6 +57,13 @@ export const useAuthStore = defineStore('auth', () => {
   const initializeAuth = async () => {
     try {
       setLoading(true)
+
+      if (!isSupabaseConfigured) {
+        // In dev without Supabase, mark initialized and stop loading
+        isInitialized.value = true
+        setLoading(false)
+        return
+      }
 
       // Get current session from Supabase
       const {
@@ -392,6 +399,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Listen to auth changes
   const setupAuthListener = () => {
+    if (!isSupabaseConfigured) return
     supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth state changed:', event, session)
 

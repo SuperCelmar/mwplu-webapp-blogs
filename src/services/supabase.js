@@ -18,11 +18,30 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase URL or Anon Key is missing. Check your .env file.')
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
+
+// Create a no-op proxy that throws only when actually used, so app can boot in dev
+function createNoopSupabase() {
+  const error = new Error(
+    'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local',
+  )
+  const handler = {
+    get() {
+      throw error
+    },
+    apply() {
+      throw error
+    },
+  }
+  // function target to allow callables and property access
+  // eslint-disable-next-line no-new-func
+  const target = function () {}
+  return new Proxy(target, handler)
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = isSupabaseConfigured
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createNoopSupabase()
 
 // Database service functions
 export const dbService = {

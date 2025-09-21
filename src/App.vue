@@ -16,6 +16,9 @@
 
     <!-- Site preferences prompt (first-party, Brave-friendly) -->
     <PrivacyPrompt />
+
+    <!-- Dev-only Supabase env warning -->
+    <DevEnvWarning :isSupabaseConfigured="isSupabaseConfigured" />
   </div>
 </template>
 
@@ -24,6 +27,8 @@ import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTurnstile } from '@/composables/useTurnstile'
 import PrivacyPrompt from '@/components/common/PrivacyPrompt.vue'
+import DevEnvWarning from '@/components/common/DevEnvWarning.vue'
+import { isSupabaseConfigured } from '@/services/supabase'
 
 const authStore = useAuthStore()
 const { loadTurnstile } = useTurnstile()
