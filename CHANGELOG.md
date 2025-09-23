@@ -71,3 +71,9 @@
 - Tweaked `DevEnvWarning` to a smaller top-right toast matching debug notifications (reduced icon size, compact text).
  - Docs[blogs]: Enriched `docs/blogs/BLOG_FEATURE_CONTEXT.md` with scope/non-goals, glossary, URLs, content model, editorial workflow, LLM HITL pipeline, SEO checklist, analytics KPIs, UI components, performance, risks, and acceptance criteria.
  - Docs[blogs]: Created comprehensive `docs/blogs/BLOG_IMPLEMENTATION_GUIDE.md` with step-by-step feature development plan, database schema design, backend infrastructure, frontend components, SEO integration, 12-week implementation timeline, testing strategy, and deployment procedures for the MWPLU blog system.
+
+## 2025-09-23
+
+- 2025-09-23T00:00:00Z (assistant) - DB[blogs]: Created `public.company_context` table in Supabase project `mwplu` with RLS enabled, policies: "Users can view active company context" and "Admins can manage company context"; added trigger `update_company_context_updated_at`; enforced single active record via partial unique index `company_context_one_active_row`.
+ - 2025-09-23T00:00:00Z (assistant) - DB[blogs]: Created Phase 1 core blog tables `public.blog_categories`, `public.blog_tags`, `public.blog_articles`, `public.blog_article_tags`, `public.blog_content_planner`; enabled RLS and added policies per spec; added `updated_at` triggers to `blog_articles` and `blog_content_planner`.
+ - 2025-09-23T00:00:00Z (assistant) - Auth[roles]: Set roles in `auth.users.raw_user_meta_data` — admins: `m10.pro.cel@gmail.com`, `linflorent@hotmail.fr`; editors: `1florentlin@gmail.com`, `lin.marcel.pro@gmail.com`. Verified policy presence on blog tables.
