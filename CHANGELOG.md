@@ -70,3 +70,4 @@
 - Restored missing `src/components/HelloWorld.vue` to satisfy existing unit test.
 - Tweaked `DevEnvWarning` to a smaller top-right toast matching debug notifications (reduced icon size, compact text).
  - Docs[blogs]: Enriched `docs/blogs/BLOG_FEATURE_CONTEXT.md` with scope/non-goals, glossary, URLs, content model, editorial workflow, LLM HITL pipeline, SEO checklist, analytics KPIs, UI components, performance, risks, and acceptance criteria.
+ - Docs[blogs]: Created comprehensive `docs/blogs/BLOG_IMPLEMENTATION_GUIDE.md` with step-by-step feature development plan, database schema design, backend infrastructure, frontend components, SEO integration, 12-week implementation timeline, testing strategy, and deployment procedures for the MWPLU blog system.
