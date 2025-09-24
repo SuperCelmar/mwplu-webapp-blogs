@@ -717,4 +717,61 @@ export const dbService = {
       return { success: false, error: error.message }
     }
   },
+
+  // Blog: Edge Functions integration
+  /**
+   * Generate blog content via Edge Function.
+   * Supports Anthropic or Gemini depending on server env (LLM_PROVIDER).
+   * @param {Object} payload
+   * @returns {Promise<{success:boolean,data?:any,error?:string}>}
+   */
+  async generateBlogContent(payload) {
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-blog-content', {
+        body: payload,
+      })
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error generating blog content:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * Validate SEO heuristically; optionally persists an audit record when allowed.
+   * @param {Object} payload
+   * @returns {Promise<{success:boolean,data?:any,error?:string}>}
+   */
+  async validateSEO(payload) {
+    try {
+      const { data, error } = await supabase.functions.invoke('validate-seo', {
+        body: payload,
+      })
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error validating SEO:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * Send analytics event for blog articles.
+   * Note: requires user to be authenticated due to function JWT verification.
+   * @param {Object} event
+   * @returns {Promise<{success:boolean,error?:string}>}
+   */
+  async sendBlogAnalyticsEvent(event) {
+    try {
+      const { data, error } = await supabase.functions.invoke('process-analytics', {
+        body: event,
+      })
+      if (error) throw error
+      return { success: true }
+    } catch (error) {
+      console.error('Error sending blog analytics event:', error)
+      return { success: false, error: error.message }
+    }
+  },
 }
