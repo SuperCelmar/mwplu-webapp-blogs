@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest",
+    "seed:blog": "RUN_SEED=true node scripts/seedTaxonomy.js",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
   },

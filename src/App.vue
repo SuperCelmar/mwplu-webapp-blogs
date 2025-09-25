@@ -14,6 +14,9 @@
       <router-view />
     </div>
 
+    <!-- Global UI notifications -->
+    <GlobalNotification />
+
     <!-- Site preferences prompt (first-party, Brave-friendly) -->
     <PrivacyPrompt />
 
@@ -28,6 +31,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useTurnstile } from '@/composables/useTurnstile'
 import PrivacyPrompt from '@/components/common/PrivacyPrompt.vue'
 import DevEnvWarning from '@/components/common/DevEnvWarning.vue'
+import GlobalNotification from '@/components/common/GlobalNotification.vue'
 import { isSupabaseConfigured } from '@/services/supabase'
 
 const authStore = useAuthStore()

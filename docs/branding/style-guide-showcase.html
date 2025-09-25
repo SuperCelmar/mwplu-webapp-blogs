@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MWPLU Style Guide Showcase</title>
+  <style>
+    /* ===== Design Tokens (from src/styles/variables.css) ===== */
+    :root {
+      /* Core Colors */
+      --color-black: #000000;
+      --color-white: #FFFFFF;
+      --color-blue: #0284c7;
+      --color-blue-hover: #0052A3;
+      --color-blue-dark: #0052A3;
+
+      /* Status Colors */
+      --color-success: #10B981;
+      --color-success-bg: #d4edda;
+      --color-error: #EF4444;
+      --color-error-bg: #FEF2F2;
+      --color-error-border: #FECACA;
+      --color-info: #3B82F6;
+      --color-info-bg: #f5f5f5;
+
+      /* Neutral Colors */
+      --color-gray-50: #F9FAFB;
+      --color-gray-100: #F3F4F6;
+      --color-gray-200: #E5E7EB;
+      --color-gray-300: #D1D5DB;
+      --color-gray-400: #9CA3AF;
+      --color-gray-500: #6B7280;
+      --color-gray-600: #4B5563;
+      --color-gray-700: #374151;
+      --color-gray-800: #1F2937;
+      --color-gray-900: #111827;
+
+      /* Typography */
+      --font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-size-xxs: 0.525rem;
+      --font-size-xs: 0.6rem;
+      --font-size-sm: 0.675rem;
+      --font-size-base: 0.75rem;
+      --font-size-lg: 0.825rem;
+      --font-size-xl: 0.9rem;
+      --font-size-2xl: 1rem;
+      --font-size-3xl: 1.125rem;
+
+      --font-weight-thin: 100;
+      --font-weight-light: 300;
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+      --font-weight-extrabold: 800;
+
+      --line-height-tight: 1.25;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.75;
+
+      /* Spacing Scale */
+      --space-1: 0.25rem; /* 4px */
+      --space-2: 0.5rem;  /* 8px */
+      --space-3: 0.75rem; /* 12px */
+      --space-4: 1rem;    /* 16px */
+      --space-5: 1.25rem; /* 20px */
+      --space-6: 1.5rem;  /* 24px */
+      --space-8: 2rem;    /* 32px */
+      --space-10: 2.5rem; /* 40px */
+      --space-12: 3rem;   /* 48px */
+      --space-16: 4rem;   /* 64px */
+
+      /* Border Radius */
+      --radius-button: 2px;
+      --radius-form: 4px;
+      --radius-card: 8px;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+      /* Transitions */
+      --transition-fast: 150ms ease-in-out;
+      --transition-base: 250ms ease-in-out;
+      --transition-slow: 350ms ease-in-out;
+
+      /* Z-index Scale */
+      --z-dropdown: 1000;
+      --z-dropdown-menu: 1010;
+      --z-modal: 1050;
+      --z-popover: 1100;
+      --z-tooltip: 1150;
+
+      /* Additional tokens */
+      --accent-gray: #e0e0e0;
+      --border-gray: #d3d3d3;
+
+      /* Header and overlay surfaces */
+      --header-bg: rgba(255, 255, 255, 0.95);
+      --header-bg-scrolled: rgba(255, 255, 255, 0.87);
+      --header-border: rgba(0, 0, 0, 0.1);
+      --mobile-nav-bg: var(--color-white);
+      --dropdown-bg: var(--color-white);
+
+      /* Footer surfaces */
+      --footer-bg: var(--color-gray-50);
+      --footer-text: var(--color-black);
+      --footer-muted: var(--color-gray-600);
+      --footer-border: var(--color-gray-200);
+    }
+
+    [data-theme="dark"] {
+      --color-black: #e5e7eb; /* text becomes light */
+      --color-white: #0b0f13; /* backgrounds become dark */
+
+      --color-gray-50: #111827;
+      --color-gray-100: #1f2937;
+      --color-gray-200: #374151;
+      --color-gray-300: #4b5563;
+      --color-gray-400: #6b7280;
+      --color-gray-500: #9ca3af;
+      --color-gray-600: #d1d5db;
+      --color-gray-700: #e5e7eb;
+      --color-gray-800: #f3f4f6;
+      --color-gray-900: #f9fafb;
+
+      --accent-gray: #2a2f36;
+      --border-gray: #2f3a46;
+
+      --color-success-bg: #064e3b;
+      --color-error-bg: #7f1d1d;
+      --color-error-border: #991b1b;
+      --color-info-bg: #1e3a8a;
+
+      --header-bg: rgba(10, 14, 18, 0.85);
+      --header-bg-scrolled: rgba(10, 14, 18, 0.92);
+      --header-border: rgba(255, 255, 255, 0.08);
+      --mobile-nav-bg: #0b0f13;
+      --dropdown-bg: #0f141a;
+
+      --footer-bg: #0b0f13;
+      --footer-text: #e5e7eb;
+      --footer-muted: #cbd5e1;
+      --footer-border: #1f2937;
+
+      color-scheme: dark;
+    }
+
+    /* ===== Base, Typography, Code (from src/styles/base.css) ===== */
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-normal);
+      color: var(--color-black);
+      background-color: var(--color-white);
+      margin: 0;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: var(--font-weight-bold);
+      line-height: var(--line-height-tight);
+      margin: 0 0 var(--space-3) 0;
+    }
+    h1 { font-size: var(--font-size-3xl); }
+    h2 { font-size: var(--font-size-2xl); }
+    h3 { font-size: var(--font-size-xl); }
+    h4 { font-size: var(--font-size-lg); }
+    h5 { font-size: var(--font-size-base); }
+    h6 { font-size: var(--font-size-sm); }
+    p { line-height: var(--line-height-normal); margin: 0 0 var(--space-3) 0; }
+    a { color: var(--color-gray-500); transition: color var(--transition-fast); }
+    a:hover { color: var(--color-blue-hover); opacity: 0.8; }
+    code { font-family: 'Courier New', Courier, monospace; font-size: 0.875em; background-color: var(--color-gray-100); padding: 0.125rem 0.25rem; border-radius: var(--radius-button); }
+    pre { font-family: 'Courier New', Courier, monospace; font-size: 0.875rem; background-color: var(--color-gray-100); padding: var(--space-4); border-radius: var(--radius-form); overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    ::selection { background-color: var(--color-blue); color: var(--color-white); }
+
+    /* ===== Utilities (from src/styles/utilities.css) ===== */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 var(--space-4); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading { display: inline-block; width: 1em; height: 1em; border: 2px solid var(--color-gray-300); border-top-color: var(--color-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .text-center { text-align: center; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .grid-col-4 { width: 33.33%; padding: 0 12px; margin: 0 auto; }
+    @media (max-width: 768px) { .grid-col-4 { width: 100%; } }
+
+    /* ===== Focus styles (from src/styles/focus.css), corrected token ===== */
+    *:focus { outline: none; }
+    *:focus-visible { outline: 2px solid var(--color-black); outline-offset: 2px; }
+    input:focus-visible, textarea:focus-visible, select:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-black); }
+    .skip-link { position: absolute; top: -40px; left: 0; background: var(--color-black); color: var(--color-white); padding: var(--space-2) var(--space-4); border-radius: var(--radius-button); z-index: var(--z-tooltip); }
+    .skip-link:focus { top: var(--space-2); }
+
+    /* ===== Buttons (from src/styles/buttons.css) ===== */
+    .to-plu-btn, .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; font-size: 14px; font-weight: 500; border: none; border-radius: 2px; cursor: pointer; transition: all 0.3s ease; text-decoration: none; background: var(--color-black); color: var(--color-white); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); position: relative; overflow: hidden; }
+    .btn-secondary { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; font-size: 14px; font-weight: 500; border-radius: 2px; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; background: var(--color-white); color: var(--color-black); border: 1px solid var(--color-gray-400); }
+    .to-plu-btn:hover, .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
+    .btn-secondary:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }
+    .to-plu-btn:active, .btn:active, .btn-secondary:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
+    .to-plu-btn:disabled, .btn:disabled, .btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    @media (max-width: 768px) { .to-plu-btn, .btn { margin-top: 1rem; padding: 0.875rem 1.25rem; width: 100%; } }
+
+    /* ===== Forms (from src/styles/forms.css) ===== */
+    .form-group { margin-bottom: 24px; position: relative; }
+    .form-label { display: block; margin-bottom: 8px; font-size: 14px; padding-left: 3px; font-weight: 500; color: var(--color-black); }
+    .input-wrapper { position: relative; }
+    .form-input { width: 100%; padding: 12px 40px 12px 0; font-size: 14px; border: none; border-bottom: 1px solid var(--border-gray); background: transparent; transition: all 0.3s ease; }
+    .form-input:focus { outline: none; border-color: var(--color-black); transform: translateY(-1px); }
+    .form-select { display: block; width: 100%; border: 1px solid var(--border-gray); border-radius: 3px; padding: 0.75rem 1rem; font-size: 14px; transition: all 0.3s ease; background: var(--color-white); cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); position: relative; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem; }
+    .form-select:hover { border-color: var(--color-gray-400); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transform: translateY(-1px); }
+    .form-select:focus { outline: none; border-color: var(--color-black); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); transform: translateY(-2px); }
+    .form-select:disabled { background-color: var(--accent-gray); cursor: not-allowed; opacity: 0.6; transform: none; box-shadow: none; }
+    .checkbox-wrapper { display: flex; align-items: flex-start; cursor: pointer; margin: 16px 0; padding: 8px 0; }
+    .checkbox-wrapper input[type="checkbox"] { margin-right: 12px; margin-top: 2px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--color-black); }
+    .checkbox-wrapper input[type="checkbox"]:disabled { opacity: 0.5; cursor: not-allowed; }
+    .checkbox-wrapper.disabled { opacity: 0.7; cursor: not-allowed; }
+    .checkbox-label { font-size: 14px; line-height: 1.5; color: var(--color-black); flex: 1; }
+    .error-message, .status-message { margin-top: 16px; padding: 12px; font-size: 14px; text-align: center; border-radius: 4px; }
+    .error-message { color: var(--color-error); background: var(--color-error-bg); }
+    .status-message { color: var(--color-black); background: var(--color-info); }
+
+    /* ===== Alerts (from src/styles/messages.css) ===== */
+    .alert { padding: 1rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: var(--radius-form); }
+    .alert-success { color: var(--color-black); background-color: #d4edda; }
+    .alert-info { color: var(--color-black); background-color: var(--color-info); }
+    .alert-warning { color: var(--color-black); background-color: var(--color-error); }
+    .alert-danger { color: var(--color-black); background-color: var(--color-error); }
+
+    /* ===== Notification demo (mirrors BaseNotification styling) ===== */
+    .notification { background: var(--color-white); border-radius: var(--radius-form); box-shadow: var(--shadow-lg); border-left: 4px solid; padding: var(--space-4); display: flex; gap: var(--space-3); align-items: flex-start; }
+    .notification .message { margin: 0; color: var(--color-black); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+    .notification-success { border-left-color: var(--color-success); }
+    .notification-error { border-left-color: var(--color-error); }
+    .notification-warning { border-left-color: #F59E0B; }
+    .notification-info { border-left-color: var(--color-blue); }
+
+    /* ===== Demo-only helpers (namespaced with sg-) ===== */
+    .sg-main { padding: var(--space-6) 0 var(--space-12); }
+    .sg-section { margin: var(--space-8) 0; }
+    .sg-subgrid { display: grid; grid-template-columns: 1.2fr 2fr; gap: var(--space-4); }
+    .sg-card { background: var(--color-white); color: var(--color-black); border: 1px solid var(--border-gray); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding: var(--space-4); }
+    .sg-token-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--space-3); }
+    .sg-swatch { border: 1px solid var(--border-gray); border-radius: var(--radius-card); overflow: hidden; box-shadow: var(--shadow-sm); }
+    .sg-swatch__color { height: 64px; }
+    .sg-swatch__meta { padding: var(--space-3); font-size: var(--font-size-sm); }
+    .sg-kbd { display: inline-block; border: 1px solid var(--border-gray); background: var(--color-white); border-radius: var(--radius-button); padding: 2px 6px; font-size: var(--font-size-xs); }
+    .sg-box { display: inline-block; background: var(--color-white); color: var(--color-black); border: 1px solid var(--border-gray); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding: var(--space-3); margin-right: var(--space-3); }
+    .sg-space-demo { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+    .sg-space-block { height: var(--space-4); background: var(--color-blue); border-radius: var(--radius-button); }
+    .sg-radii-row, .sg-shadow-row, .sg-demo-row { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+    .sg-z-stack { position: relative; height: 140px; background: var(--color-gray-50); border: 1px dashed var(--border-gray); border-radius: var(--radius-card); }
+    .sg-z-item { position: absolute; width: 140px; height: 80px; border-radius: var(--radius-card); display: flex; align-items: center; justify-content: center; color: var(--color-white); font-weight: var(--font-weight-medium); }
+    .sg-row { display: flex; flex-wrap: wrap; margin: 0 -12px; }
+    .sg-col { padding: 0 12px; }
+    .sg-table { width: 100%; border-collapse: collapse; }
+    .sg-table th, .sg-table td { text-align: left; padding: var(--space-3); border-bottom: 1px solid var(--border-gray); }
+    .sg-table tbody tr:hover { background: var(--color-gray-100); }
+    .sg-breadcrumbs { display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; font-size: var(--font-size-sm); }
+    .sg-breadcrumbs a { color: var(--color-black); text-decoration: none; padding: 2px 6px; border-radius: var(--radius-button); }
+    .sg-breadcrumbs a:hover { background: var(--color-gray-100); }
+
+    /* Simulated states for buttons */
+    .sg-hover .btn { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
+    .sg-active .btn { transform: translateY(0); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+
+    /* Demo header/footer components */
+    .demo-header { background: var(--header-bg); border-bottom: 1px solid var(--header-border); position: sticky; top: 0; z-index: var(--z-dropdown); }
+    .demo-header .wrap { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) 0; }
+    .demo-nav a { color: var(--color-black); text-decoration: none; padding: var(--space-2) var(--space-3); border-radius: var(--radius-button); }
+    .demo-nav a:hover { background: var(--color-gray-100); }
+    .demo-footer { background: var(--footer-bg); color: var(--footer-text); border-top: 1px solid var(--footer-border); padding: var(--space-6) 0; }
+
+    /* Modal demo */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: var(--z-modal); }
+    .modal-content { background: var(--color-white); color: var(--color-black); border: 1px solid var(--border-gray); border-radius: var(--radius-card); box-shadow: var(--shadow-lg); width: min(560px, 92vw); max-width: 560px; }
+    .modal-header, .modal-footer { padding: var(--space-4); border-bottom: 1px solid var(--border-gray); }
+    .modal-footer { border-top: 1px solid var(--border-gray); border-bottom: none; display: flex; justify-content: flex-end; gap: var(--space-3); }
+    .modal-body { padding: var(--space-4); }
+    .modal-close { background: none; border: 1px solid var(--border-gray); border-radius: var(--radius-button); padding: 4px 8px; cursor: pointer; }
+    .modal-close:hover { background: var(--color-gray-100); }
+    .modal-open .modal-backdrop { display: flex; }
+
+    /* Dropdown demo */
+    .sg-dropdown { position: relative; display: inline-block; }
+    .sg-dropdown-menu { position: absolute; top: calc(100% + 6px); right: 0; min-width: 200px; background: var(--dropdown-bg); border: 1px solid var(--border-gray); border-radius: var(--radius-card); box-shadow: var(--shadow-md); max-height: 0; overflow: hidden; transition: max-height var(--transition-base), opacity var(--transition-base); opacity: 0; z-index: var(--z-dropdown-menu); }
+    .sg-dropdown[aria-expanded="true"] .sg-dropdown-menu { max-height: 320px; opacity: 1; }
+    .sg-dropdown-menu a { display: block; padding: var(--space-3); color: var(--color-black); text-decoration: none; }
+    .sg-dropdown-menu a:hover { background: var(--color-gray-100); }
+
+    /* Card pattern */
+    .card { background: var(--color-white); color: var(--color-black); border: 1px solid var(--border-gray); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding: var(--space-4); }
+    .card__title { font-size: var(--font-size-xl); margin: 0 0 var(--space-2) 0; }
+    .card__body { color: var(--color-gray-600); }
+
+    /* Callouts */
+    .sg-callout { font-size: var(--font-size-sm); color: var(--color-gray-600); margin-top: var(--space-2); }
+    .sg-grid-outline { border: 1px dashed var(--border-gray); background: var(--color-gray-50); padding: var(--space-3); border-radius: var(--radius-form); }
+
+    /* Do / Don't */
+    .sg-do { border-left: 4px solid var(--color-success); }
+    .sg-dont { border-left: 4px solid var(--color-error); }
+
+    .badge { display: inline-block; font-size: var(--font-size-xxs); padding: 2px 6px; border-radius: 999px; background: var(--color-gray-100); border: 1px solid var(--border-gray); color: var(--color-black); }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="demo-header">
+    <div class="container wrap">
+      <div class="wrap">
+        <strong>MWPLU Style Guide</strong>
+      </div>
+      <nav class="demo-nav" aria-label="Primary navigation">
+        <a href="#foundations">Foundations</a>
+        <a href="#layout">Layout</a>
+        <a href="#components">Components</a>
+        <a href="#interactions">Interactions</a>
+        <a href="#accessibility">Accessibility</a>
+        <a href="#dos-donts">Dos & Don’ts</a>
+      </nav>
+      <div>
+        <label class="checkbox-wrapper" style="align-items:center;gap:8px;cursor:pointer;user-select:none;">
+          <input id="themeToggle" type="checkbox" aria-label="Toggle dark mode">
+          <span class="checkbox-label">Dark mode</span>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="sg-main">
+    <div class="container">
+      <section class="sg-section" id="intro">
+        <h1>MWPLU Web App Style Guide Showcase</h1>
+        <p class="lead" style="margin: var(--space-2) 0 var(--space-6); max-width: 72ch;">A live, interactive documentation of MWPLU’s tokens, utilities, and components. Toggle dark mode to verify theme remapping.</p>
+      </section>
+
+      <section class="sg-section" id="foundations">
+        <h2>Foundations</h2>
+
+        <div class="sg-subgrid">
+          <aside class="sg-card">
+            <strong>Tokens</strong>
+            <ul>
+              <li>Colors: <code>--color-*</code></li>
+              <li>Typography: <code>--font-*</code></li>
+              <li>Spacing: <code>--space-*</code></li>
+              <li>Radii: <code>--radius-*</code></li>
+              <li>Shadows: <code>--shadow-*</code></li>
+              <li>Z-index: <code>--z-*</code></li>
+            </ul>
+          </aside>
+
+          <div>
+            <article id="colors" class="sg-card" style="margin-bottom: var(--space-4);">
+              <h3>Color Tokens</h3>
+              <p class="sg-callout">Use CSS variables only. Dark mode via <code>&lt;html data-theme="dark"&gt;</code>.</p>
+              <div class="sg-token-grid" aria-label="Color swatches">
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-black);"></div><div class="sg-swatch__meta"><strong>--color-black</strong><br><code>#000000</code></div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-white); border-top:1px solid var(--border-gray);"></div><div class="sg-swatch__meta"><strong>--color-white</strong><br><code>#FFFFFF</code></div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-blue);"></div><div class="sg-swatch__meta"><strong>--color-blue</strong><br><code>#0284c7</code></div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-blue-hover);"></div><div class="sg-swatch__meta"><strong>--color-blue-hover</strong><br><code>#0052A3</code></div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-success);"></div><div class="sg-swatch__meta"><strong>--color-success</strong><br><code>#10B981</code></div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-success-bg);"></div><div class="sg-swatch__meta"><strong>--color-success-bg</strong><br><code>#d4edda</code> / dark</div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-error);"></div><div class="sg-swatch__meta"><strong>--color-error</strong><br><code>#EF4444</code></div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-error-bg);"></div><div class="sg-swatch__meta"><strong>--color-error-bg</strong><br><code>#FEF2F2</code> / dark</div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-info);"></div><div class="sg-swatch__meta"><strong>--color-info</strong><br><code>#3B82F6</code></div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--color-info-bg);"></div><div class="sg-swatch__meta"><strong>--color-info-bg</strong><br><code>#f5f5f5</code> / dark</div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--accent-gray);"></div><div class="sg-swatch__meta"><strong>--accent-gray</strong><br><code>#e0e0e0</code> / dark</div></div>
+                <div class="sg-swatch"><div class="sg-swatch__color" style="background: var(--dropdown-bg);"></div><div class="sg-swatch__meta"><strong>--dropdown-bg</strong></div></div>
+              </div>
+              <div class="sg-callout">Example: <code>background: var(--color-info-bg);</code></div>
+              <pre><code>&lt;div class="card" style="background: var(--color-white); color: var(--color-black);"&gt;...&lt;/div&gt;</code></pre>
+            </article>
+
+            <article id="typography" class="sg-card" style="margin-bottom: var(--space-4);">
+              <h3>Typography</h3>
+              <div>
+                <h1>Heading 1</h1>
+                <h2>Heading 2</h2>
+                <h3>Heading 3</h3>
+                <h4>Heading 4</h4>
+                <h5>Heading 5</h5>
+                <h6>Heading 6</h6>
+                <p>Body text at <code>--font-size-base</code>. <strong>Bold</strong>, <em>italic</em>, and <code>inline code</code>.</p>
+              </div>
+              <div class="sg-callout">Variables: <span class="sg-kbd">--font-family</span> <span class="sg-kbd">--font-size-*</span> <span class="sg-kbd">--line-height-*</span></div>
+              <pre><code>h1 { font-size: var(--font-size-3xl); }
+h2 { font-size: var(--font-size-2xl); }
+code { background: var(--color-gray-100); }</code></pre>
+            </article>
+
+            <article id="spacing" class="sg-card" style="margin-bottom: var(--space-4);">
+              <h3>Spacing Tokens</h3>
+              <div class="sg-space-demo">
+                <div><div class="sg-space-block" style="width: var(--space-1);"></div><small>--space-1</small></div>
+                <div><div class="sg-space-block" style="width: var(--space-2);"></div><small>--space-2</small></div>
+                <div><div class="sg-space-block" style="width: var(--space-3);"></div><small>--space-3</small></div>
+                <div><div class="sg-space-block" style="width: var(--space-4);"></div><small>--space-4</small></div>
+                <div><div class="sg-space-block" style="width: var(--space-5);"></div><small>--space-5</small></div>
+                <div><div class="sg-space-block" style="width: var(--space-6);"></div><small>--space-6</small></div>
+                <div><div class="sg-space-block" style="width: var(--space-8);"></div><small>--space-8</small></div>
+                <div><div class="sg-space-block" style="width: var(--space-10);"></div><small>--space-10</small></div>
+                <div><div class="sg-space-block" style="width: var(--space-12);"></div><small>--space-12</small></div>
+                <div><div class="sg-space-block" style="width: var(--space-16);"></div><small>--space-16</small></div>
+              </div>
+              <pre><code>.card { padding: var(--space-4); margin-bottom: var(--space-4); }</code></pre>
+            </article>
+
+            <article id="radii" class="sg-card" style="margin-bottom: var(--space-4);">
+              <h3>Radii, Borders, Shadows</h3>
+              <div class="sg-radii-row">
+                <div class="sg-box" style="border-radius: var(--radius-button);">--radius-button</div>
+                <div class="sg-box" style="border-radius: var(--radius-form);">--radius-form</div>
+                <div class="sg-box" style="border-radius: var(--radius-card);">--radius-card</div>
+              </div>
+              <div class="sg-shadow-row" style="margin-top: var(--space-3);">
+                <div class="sg-box" style="box-shadow: var(--shadow-sm);">--shadow-sm</div>
+                <div class="sg-box" style="box-shadow: var(--shadow-md);">--shadow-md</div>
+                <div class="sg-box" style="box-shadow: var(--shadow-lg);">--shadow-lg</div>
+              </div>
+              <pre><code>.panel { border: 1px solid var(--border-gray); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); }</code></pre>
+            </article>
+
+            <article id="zindex" class="sg-card">
+              <h3>Z-index Tokens</h3>
+              <div class="sg-z-stack">
+                <div class="sg-z-item" style="left: 16px; top: 16px; background: #22c55e; z-index: var(--z-dropdown);">--z-dropdown</div>
+                <div class="sg-z-item" style="left: 48px; top: 40px; background: #3b82f6; z-index: var(--z-dropdown-menu);">--z-dropdown-menu</div>
+                <div class="sg-z-item" style="left: 80px; top: 64px; background: #ef4444; z-index: var(--z-modal);">--z-modal</div>
+              </div>
+              <pre><code>.modal { z-index: var(--z-modal); }</code></pre>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="sg-section" id="layout">
+        <h2>Layout</h2>
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>.container</h3>
+          <div class="container sg-grid-outline">This area is constrained by <code>.container</code> (max 1200px with horizontal padding).</div>
+          <pre><code>&lt;div class="container"&gt;...&lt;/div&gt;</code></pre>
+        </article>
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>.grid</h3>
+          <div class="grid sg-grid-outline">
+            <div class="sg-card">Column A</div>
+            <div class="sg-card">Column B</div>
+          </div>
+          <pre><code>&lt;div class="grid"&gt;
+  &lt;div&gt;A&lt;/div&gt;
+  &lt;div&gt;B&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </article>
+        <article class="sg-card">
+          <h3>.grid-col-4</h3>
+          <div class="sg-row sg-grid-outline">
+            <div class="grid-col-4 sg-col"><div class="sg-card">33.33%</div></div>
+            <div class="grid-col-4 sg-col"><div class="sg-card">33.33%</div></div>
+            <div class="grid-col-4 sg-col"><div class="sg-card">33.33%</div></div>
+          </div>
+          <pre><code>&lt;div class="grid-col-4"&gt;...&lt;/div&gt;</code></pre>
+        </article>
+        <article class="sg-card" style="margin-top: var(--space-4);">
+          <h3>Header, Footer, Navigation</h3>
+          <div class="sg-callout">Header uses <span class="sg-kbd">--header-bg</span>, footer uses <span class="sg-kbd">--footer-*</span>.</div>
+          <div class="demo-header"><div class="container wrap"><div class="wrap">Logo</div><nav class="demo-nav"><a href="#">Home</a><a href="#">Docs</a><a href="#">Contact</a></nav></div></div>
+          <div style="padding: var(--space-4);">Content…</div>
+          <div class="demo-footer"><div class="container"><small>© MWPLU — Footer area</small></div></div>
+        </article>
+      </section>
+
+      <section class="sg-section" id="components">
+        <h2>Components</h2>
+
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Buttons</h3>
+          <div class="sg-demo-row">
+            <div>
+              <div class="badge">default</div>
+              <div><button class="btn" type="button">Primary</button></div>
+            </div>
+            <div class="sg-hover">
+              <div class="badge">hover</div>
+              <div><button class="btn" type="button">Primary</button></div>
+            </div>
+            <div class="sg-active">
+              <div class="badge">active</div>
+              <div><button class="btn" type="button">Primary</button></div>
+            </div>
+            <div>
+              <div class="badge">disabled</div>
+              <div><button class="btn" type="button" disabled>Primary</button></div>
+            </div>
+          </div>
+          <div class="sg-demo-row" style="margin-top: var(--space-3);">
+            <div><button class="btn-secondary" type="button">Secondary</button></div>
+            <div><button class="btn-secondary" type="button" disabled>Secondary</button></div>
+          </div>
+          <pre><code>&lt;button class="btn"&gt;Primary&lt;/button&gt;
+&lt;button class="btn-secondary"&gt;Secondary&lt;/button&gt;</code></pre>
+        </article>
+
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Forms</h3>
+          <form>
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <div class="input-wrapper">
+                <input id="email" class="form-input" type="email" placeholder="you@example.com">
+              </div>
+              <div class="error-message">Adresse email invalide</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="role">Select role</label>
+              <select id="role" class="form-select"><option>Editor</option><option>Admin</option></select>
+              <div class="status-message" style="margin-top: 8px;">En cours…</div>
+            </div>
+            <label class="checkbox-wrapper">
+              <input type="checkbox">
+              <span class="checkbox-label">I agree to the <a href="#">terms</a></span>
+            </label>
+          </form>
+          <pre><code>&lt;div class="form-group"&gt;
+  &lt;label class="form-label" for="email"&gt;Email&lt;/label&gt;
+  &lt;div class="input-wrapper"&gt;
+    &lt;input id="email" class="form-input" type="email"&gt;
+  &lt;/div&gt;
+  &lt;div class="error-message"&gt;Adresse email invalide&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </article>
+
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Card</h3>
+          <section class="card" style="max-width: 520px;">
+            <h3 class="card__title">Titre</h3>
+            <p class="card__body">Contenu descriptif avec couleurs neutres et rayon de carte.</p>
+            <button class="btn">Action</button>
+          </section>
+          <pre><code>&lt;section class="card"&gt;
+  &lt;h3 class="card__title"&gt;Titre&lt;/h3&gt;
+  &lt;p class="card__body"&gt;Contenu…&lt;/p&gt;
+  &lt;button class="btn"&gt;Action&lt;/button&gt;
+&lt;/section&gt;</code></pre>
+        </article>
+
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Modal Overlay</h3>
+          <button class="btn" type="button" id="openModalBtn">Open modal</button>
+          <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true" id="demoModal">
+            <div class="modal-content">
+              <div class="modal-header"><h4 id="modalTitle">Modal title</h4></div>
+              <div class="modal-body">Token-driven overlay demo.</div>
+              <div class="modal-footer">
+                <button class="btn-secondary modal-close" type="button" id="closeModalBtn">Close</button>
+                <button class="btn" type="button">Confirm</button>
+              </div>
+            </div>
+          </div>
+          <pre><code>&lt;div class="modal-backdrop"&gt;
+  &lt;div class="modal-content"&gt;...&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </article>
+
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Alerts</h3>
+          <div class="alert alert-success">Opération réussie</div>
+          <div class="alert alert-info">Information</div>
+          <div class="alert alert-warning">Avertissement</div>
+          <div class="alert alert-danger">Erreur</div>
+          <pre><code>&lt;div class="alert alert-success"&gt;...&lt;/div&gt;</code></pre>
+        </article>
+
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Notifications</h3>
+          <div class="notification notification-success"><p class="message">Succès: L’opération s’est bien déroulée.</p></div>
+          <div class="notification notification-error"><p class="message">Erreur: Une erreur est survenue.</p></div>
+          <div class="notification notification-warning"><p class="message">Avertissement: Vérifiez vos informations.</p></div>
+          <div class="notification notification-info"><p class="message">Info: Nouvelle mise à jour disponible.</p></div>
+          <pre><code>&lt;div class="notification notification-success"&gt;...&lt;/div&gt;</code></pre>
+        </article>
+
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Table and List</h3>
+          <table class="sg-table" aria-label="Styled table">
+            <thead><tr><th>Heading</th><th>Status</th><th>Owner</th></tr></thead>
+            <tbody>
+              <tr><td>Row 1</td><td><span class="sg-kbd">ok</span></td><td>Team A</td></tr>
+              <tr><td>Row 2</td><td><span class="sg-kbd">warn</span></td><td>Team B</td></tr>
+              <tr><td>Row 3</td><td><span class="sg-kbd">err</span></td><td>Team C</td></tr>
+            </tbody>
+          </table>
+          <ul>
+            <li>List item one</li>
+            <li>List item two (hover table rows to see emphasis)</li>
+          </ul>
+          <pre><code>&lt;table class="sg-table"&gt;...&lt;/table&gt;</code></pre>
+        </article>
+
+        <article class="sg-card">
+          <h3>Breadcrumbs</h3>
+          <nav class="sg-breadcrumbs" aria-label="Breadcrumb">
+            <a href="#">Home</a><span aria-hidden="true">/</span>
+            <a href="#">Library</a><span aria-hidden="true">/</span>
+            <span aria-current="page">Data</span>
+          </nav>
+          <pre><code>&lt;nav class="sg-breadcrumbs" aria-label="Breadcrumb"&gt;...&lt;/nav&gt;</code></pre>
+        </article>
+      </section>
+
+      <section class="sg-section" id="interactions">
+        <h2>Interactions & Motion</h2>
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Hover, Focus, Active</h3>
+          <p>Use keyboard to tab through elements and observe <code>:focus-visible</code> outlines.</p>
+          <div class="sg-demo-row"><a href="#" class="btn-secondary">Focusable link as button</a><button class="btn">Focusable button</button><input class="form-input" placeholder="Focusable input"></div>
+        </article>
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Loading Spinner</h3>
+          <div class="sg-demo-row"><span class="loading" aria-label="Loading"></span><span>Loading…</span></div>
+          <pre><code>&lt;span class="loading" aria-label="Loading"&gt;&lt;/span&gt;</code></pre>
+        </article>
+        <article class="sg-card">
+          <h3>Animated Dropdown</h3>
+          <div class="sg-dropdown" id="demoDropdown" aria-expanded="false">
+            <button class="btn-secondary" type="button" id="toggleDropdownBtn" aria-haspopup="true" aria-expanded="false">Toggle menu</button>
+            <div class="sg-dropdown-menu" role="menu" aria-label="Sample menu">
+              <a href="#" role="menuitem">Profile</a>
+              <a href="#" role="menuitem">Settings</a>
+              <a href="#" role="menuitem">Logout</a>
+            </div>
+          </div>
+          <pre><code>.sg-dropdown[aria-expanded="true"] .sg-dropdown-menu { max-height: 320px; opacity: 1; }</code></pre>
+        </article>
+      </section>
+
+      <section class="sg-section" id="accessibility">
+        <h2>Accessibility</h2>
+        <article class="sg-card" style="margin-bottom: var(--space-4);">
+          <h3>Focus Outline Demo</h3>
+          <a href="#" class="btn-secondary">Focusable element</a>
+          <p class="sg-callout">Focus styles use <code>--color-black</code> for parity in both themes.</p>
+        </article>
+        <article class="sg-card">
+          <h3>.sr-only usage</h3>
+          <p>Below, the label is only visible to assistive technologies.</p>
+          <label class="sr-only" for="secret">Secret input</label>
+          <input id="secret" class="form-input" placeholder="This has a screen-reader-only label">
+          <pre><code>&lt;label class="sr-only" for="id"&gt;Label&lt;/label&gt;</code></pre>
+        </article>
+      </section>
+
+      <section class="sg-section" id="dos-donts">
+        <h2>Dos and Don’ts</h2>
+        <div class="grid" style="gap: var(--space-4);">
+          <div class="sg-card sg-do">
+            <h3>Do: Use tokens</h3>
+            <div class="sg-box" style="background: var(--color-info); color: var(--color-white);">Background: var(--color-info)</div>
+            <pre><code>color: var(--color-black);
+padding: var(--space-4);</code></pre>
+          </div>
+          <div class="sg-card sg-dont">
+            <h3>Don’t: Hardcode styles</h3>
+            <div class="sg-box" style="background: #3B82F6; color: #ffffff;">Background: #3B82F6</div>
+            <pre><code>/* Avoid */
+color: #111827; /* hardcoded */
+padding: 16px;  /* not tokenized */</code></pre>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="demo-footer">
+    <div class="container">
+      <small>MWPLU UI System • Built with tokenized CSS variables • <span id="themeLabel">Light</span> theme</small>
+    </div>
+  </footer>
+
+  <script>
+    // Dark mode toggle
+    (function() {
+      const root = document.documentElement;
+      const toggle = document.getElementById('themeToggle');
+      const label = document.getElementById('themeLabel');
+
+      function applyTheme(theme) {
+        root.setAttribute('data-theme', theme);
+        if (label) label.textContent = theme === 'dark' ? 'Dark' : 'Light';
+      }
+
+      const saved = localStorage.getItem('mwplu-theme');
+      if (saved === 'dark') { toggle.checked = true; applyTheme('dark'); }
+
+      toggle.addEventListener('change', () => {
+        const theme = toggle.checked ? 'dark' : 'light';
+        applyTheme(theme);
+        localStorage.setItem('mwplu-theme', theme);
+      });
+    })();
+
+    // Modal
+    (function() {
+      const backdrop = document.getElementById('demoModal');
+      const openBtn = document.getElementById('openModalBtn');
+      const closeBtn = document.getElementById('closeModalBtn');
+      function open() { document.body.classList.add('modal-open'); backdrop.setAttribute('aria-hidden', 'false'); closeBtn.focus(); }
+      function close() { document.body.classList.remove('modal-open'); backdrop.setAttribute('aria-hidden', 'true'); openBtn.focus(); }
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      backdrop.addEventListener('click', (e) => { if (e.target === backdrop) close(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('modal-open')) close(); });
+    })();
+
+    // Dropdown
+    (function() {
+      const dropdown = document.getElementById('demoDropdown');
+      const toggle = document.getElementById('toggleDropdownBtn');
+      function setExpanded(v) { dropdown.setAttribute('aria-expanded', String(v)); toggle.setAttribute('aria-expanded', String(v)); }
+      toggle.addEventListener('click', () => { const expanded = dropdown.getAttribute('aria-expanded') === 'true'; setExpanded(!expanded); });
+      document.addEventListener('click', (e) => { if (!dropdown.contains(e.target)) setExpanded(false); });
+    })();
+  </script>
+</body>
+</html>

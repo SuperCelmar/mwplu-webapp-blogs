@@ -54,6 +54,14 @@ import LegalNoticeView from '@/views/policies/LegalNoticeView.vue'
 import PrivacyView from '@/views/policies/PrivacyView.vue'
 import SalesPolicyView from '@/views/policies/SalesPolicyView.vue'
 import TermsView from '@/views/policies/TermsView.vue'
+import BlogAdminView from '@/views/admin/BlogAdminView.vue'
+import PreviewBlogDashboard from '@/views/dev/blog/PreviewBlogDashboard.vue'
+import PreviewBlogStatsOverview from '@/views/dev/blog/PreviewBlogStatsOverview.vue'
+import PreviewBlogContentPlanner from '@/views/dev/blog/PreviewBlogContentPlanner.vue'
+import PreviewBlogArticleList from '@/views/dev/blog/PreviewBlogArticleList.vue'
+import PreviewBlogSchedulingCalendar from '@/views/dev/blog/PreviewBlogSchedulingCalendar.vue'
+import PreviewBlogEditor from '@/views/dev/blog/PreviewBlogEditor.vue'
+import BlogArticleEditorView from '@/views/admin/BlogArticleEditorView.vue'
 
 const routes = [
   {
@@ -64,6 +72,58 @@ const routes = [
       title: 'Accueil - MWPLU',
       requiresAuth: false,
     },
+  },
+  {
+    path: '/admin/blog',
+    name: 'admin-blog',
+    component: BlogAdminView,
+    meta: {
+      title: 'Administration du Blog - MWPLU',
+      requiresAuth: false,
+    },
+  },
+  // Dev preview routes for blog components
+  {
+    path: '/dev/blog/dashboard',
+    name: 'dev-blog-dashboard',
+    component: PreviewBlogDashboard,
+    meta: { title: 'Dev: Blog Dashboard - MWPLU', requiresAuth: false },
+  },
+  {
+    path: '/dev/blog/stats',
+    name: 'dev-blog-stats',
+    component: PreviewBlogStatsOverview,
+    meta: { title: 'Dev: Blog Stats Overview - MWPLU', requiresAuth: false },
+  },
+  {
+    path: '/dev/blog/planner',
+    name: 'dev-blog-planner',
+    component: PreviewBlogContentPlanner,
+    meta: { title: 'Dev: Blog Content Planner - MWPLU', requiresAuth: false },
+  },
+  {
+    path: '/dev/blog/list',
+    name: 'dev-blog-list',
+    component: PreviewBlogArticleList,
+    meta: { title: 'Dev: Blog Article List - MWPLU', requiresAuth: false },
+  },
+  {
+    path: '/dev/blog/calendar',
+    name: 'dev-blog-calendar',
+    component: PreviewBlogSchedulingCalendar,
+    meta: { title: 'Dev: Blog Scheduling Calendar - MWPLU', requiresAuth: false },
+  },
+  {
+    path: '/dev/blog/editor',
+    name: 'dev-blog-editor',
+    component: PreviewBlogEditor,
+    meta: { title: 'Dev: Blog Editor - MWPLU', requiresAuth: false },
+  },
+  {
+    path: '/admin/blog/editor/:id',
+    name: 'admin-blog-editor',
+    component: BlogArticleEditorView,
+    meta: { title: 'Admin: Blog Editor - MWPLU', requiresAuth: false },
   },
   {
     path: '/login',

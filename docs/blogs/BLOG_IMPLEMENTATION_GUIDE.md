@@ -89,7 +89,7 @@ CREATE TABLE blog_articles (
   content TEXT NOT NULL,
   markdown_content TEXT,
   cover_image_url TEXT,
-  status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'scheduled', 'published', 'archived')),
+  status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'ready', 'scheduled', 'published', 'archived')),
   scheduled_at TIMESTAMP WITH TIME ZONE,
   published_at TIMESTAMP WITH TIME ZONE,
   archived_at TIMESTAMP WITH TIME ZONE,
@@ -626,31 +626,31 @@ export function useEditorAnalytics() {
 **Goal:** Set up core infrastructure and basic functionality
 
 #### Week 1: Database & Backend Setup
-- [ ] Create database schema with all tables
-- [ ] Set up Row Level Security policies
-- [ ] Create basic Supabase functions
-- [ ] Set up database triggers and constraints
+- [x] Create database schema with all tables
+- [x] Set up Row Level Security policies
+- [x] Create basic Supabase functions
+- [x] Set up database triggers and constraints
 - [ ] Create seed data for categories and tags
 
 #### Week 2: Core Admin Interface
-- [ ] Build BlogDashboard component
-- [ ] Create BlogEditor with basic functionality
-- [ ] Implement CompanyContextManager
-- [ ] Set up routing for admin blog section
+- [x] Build BlogDashboard component
+- [x] Create BlogEditor with basic functionality
+- [x] Implement CompanyContextManager
+- [x] Set up routing for admin blog section
 - [ ] Add authentication guards for admin routes
 
 #### Week 3: Basic Article Management
 - [ ] Implement CRUD operations for articles
-- [ ] Create article listing and filtering
+- [x] Create article listing and filtering (UI skeleton)
 - [ ] Build basic SEO meta tag management
 - [ ] Set up article preview functionality
-- [ ] Implement basic scheduling system
+- [x] Implement basic scheduling system (UI skeleton)
 
 ### Phase 2: Content Generation & SEO (Weeks 4-6)
 **Goal:** Add AI assistance and SEO validation
 
 #### Week 4: AI Content Generation
-- [ ] Integrate LLM API for content generation
+- [x] Integrate LLM API for content generation
 - [ ] Build AI Content Assistant component
 - [ ] Implement company context integration
 - [ ] Create prompt templates and management
@@ -660,8 +660,8 @@ export function useEditorAnalytics() {
 - [ ] Build SEO Analysis Panel
 - [ ] Implement real-time SEO scoring
 - [ ] Integrate Lighthouse API
-- [ ] Create SEO issue detection and recommendations
-- [ ] Add keyword density analysis
+- [x] Create SEO issue detection and recommendations
+- [x] Add keyword density analysis
 
 #### Week 6: Advanced Editor Features
 - [ ] Implement markdown editor with live preview
@@ -685,7 +685,7 @@ export function useEditorAnalytics() {
 - [ ] Build editor analytics dashboard
 - [ ] Create performance monitoring
 - [ ] Add SEO audit scheduling
-- [ ] Implement content planning calendar
+- [x] Implement content planning calendar (UI skeleton)
 
 #### Week 9: SEO & Performance
 - [ ] Generate and serve sitemaps

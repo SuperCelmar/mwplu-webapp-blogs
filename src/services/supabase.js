@@ -45,6 +45,79 @@ export const supabase = isSupabaseConfigured
 
 // Database service functions
 export const dbService = {
+  // Company Context operations (Blog)
+  async getActiveCompanyContext() {
+    try {
+      const { data, error } = await supabase
+        .from('company_context')
+        .select('*')
+        .eq('is_active', true)
+        .order('updated_at', { ascending: false })
+        .maybeSingle()
+
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      // In dev without Supabase configured, surface a friendly result
+      if (!isSupabaseConfigured) {
+        return { success: true, data: null }
+      }
+      console.error('Error fetching active company context:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  async saveCompanyContext(context) {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser().catch(() => ({ data: { user: null } }))
+
+      const payload = {
+        name: context.name,
+        mission: context.mission,
+        values: Array.isArray(context.values) ? context.values : [],
+        tone: context.tone || null,
+        messaging: context.messaging || null,
+        brand_voice_guidelines: context.brandVoiceGuidelines || null,
+        is_active: Boolean(context.isActive),
+        created_by: user ? user.id : null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+
+      // If this context should be active, deactivate previous ones
+      if (payload.is_active) {
+        await supabase.from('company_context').update({ is_active: false }).neq('id', '00000000-0000-0000-0000-000000000000')
+      }
+
+      const { data, error } = await supabase
+        .from('company_context')
+        .insert(payload)
+        .select('*')
+        .single()
+
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      if (!isSupabaseConfigured) {
+        // Simulate success for unit tests when supabase is not configured
+        return {
+          success: true,
+          data: {
+            id: 'local-dev',
+            ...context,
+            is_active: Boolean(context.isActive),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        }
+      }
+      console.error('Error saving company context:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
   // Cities operations
   async getCities() {
     try {
@@ -757,6 +830,162 @@ export const dbService = {
   },
 
   /**
+   * Save a blog draft into blog_articles with status 'draft'.
+   * In local dev without Supabase configured, simulate success.
+   * @param {Object} payload
+   * @returns {Promise<{success:boolean,data?:any,error?:string}>}
+   */
+  async saveBlogDraft(payload) {
+    try {
+      if (!isSupabaseConfigured) {
+        console.info('[Supabase] saveBlogDraft: Supabase not configured, returning simulated success')
+        return { success: true, data: { id: 'local-draft', ...payload, status: 'draft' } }
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser().catch(() => ({ data: { user: null } }))
+
+      // Ensure profile exists to satisfy FK to public.profiles and for future joins
+      if (user) {
+        await this.ensureUserProfile(user)
+      }
+
+      const now = new Date().toISOString()
+      const record = {
+        title: payload.meta_title || 'Sans titre',
+        slug: (payload.canonical_url || '').split('/').filter(Boolean).pop() || undefined,
+        excerpt: payload.meta_description || null,
+        content: payload.content || '',
+        markdown_content: payload.content || '',
+        cover_image_url: payload.cover_image_url || null,
+        category_id: payload.category_id || null,
+        status: 'draft',
+        meta_title: payload.meta_title || null,
+        meta_description: payload.meta_description || null,
+        canonical_url: payload.canonical_url || null,
+        author_id: user ? user.id : null,
+        created_at: now,
+        updated_at: now,
+      }
+
+      console.debug('[Supabase] Inserting draft into blog_articles')
+      const { data, error } = await supabase
+        .from('blog_articles')
+        .insert(record)
+        .select('*')
+        .single()
+
+      if (error) throw error
+      console.debug('[Supabase] Draft insert success', { id: data?.id })
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error saving blog draft:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  // Blog taxonomy
+  async getBlogCategories() {
+    try {
+      if (!isSupabaseConfigured) return { success: true, data: [] }
+      const { data, error } = await supabase.from('blog_categories').select('*').eq('is_active', true).order('name')
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error fetching blog categories:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  async getBlogTags() {
+    try {
+      if (!isSupabaseConfigured) return { success: true, data: [] }
+      const { data, error } = await supabase.from('blog_tags').select('*').order('name')
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error fetching blog tags:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  async setArticleTags(articleId, tagIds) {
+    try {
+      if (!articleId || !Array.isArray(tagIds)) return { success: true }
+      if (!isSupabaseConfigured) return { success: true }
+      // Clear then insert
+      await supabase.from('blog_article_tags').delete().eq('article_id', articleId)
+      if (tagIds.length === 0) return { success: true }
+      const rows = tagIds.map((id) => ({ article_id: articleId, tag_id: id }))
+      const { error } = await supabase.from('blog_article_tags').insert(rows)
+      if (error) throw error
+      return { success: true }
+    } catch (error) {
+      console.error('Error setting article tags:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  async publishArticle(articleId, payload) {
+    try {
+      if (!isSupabaseConfigured) return { success: true }
+      const { data, error } = await supabase
+        .from('blog_articles')
+        .update({
+          status: 'published',
+          published_at: new Date().toISOString(),
+          meta_title: payload.meta_title || null,
+          meta_description: payload.meta_description || null,
+          canonical_url: payload.canonical_url || null,
+          category_id: payload.category_id || null,
+          cover_image_url: payload.cover_image_url || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', articleId)
+        .select('*')
+        .single()
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error publishing article:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * Mark an article as ready (metadata complete, not yet published)
+   * Updates metadata fields and sets status to 'ready'.
+   */
+  async markArticleReady(articleId, payload) {
+    try {
+      const now = new Date().toISOString()
+      if (!isSupabaseConfigured) {
+        return { success: true, data: { id: articleId || 'local-draft', status: 'ready', updated_at: now } }
+      }
+      const { data, error } = await supabase
+        .from('blog_articles')
+        .update({
+          status: 'ready',
+          meta_title: payload?.meta_title ?? null,
+          meta_description: payload?.meta_description ?? null,
+          canonical_url: payload?.canonical_url ?? null,
+          category_id: payload?.category_id ?? null,
+          cover_image_url: payload?.cover_image_url ?? null,
+          updated_at: now,
+        })
+        .eq('id', articleId)
+        .select('*')
+        .single()
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error marking article ready:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
    * Send analytics event for blog articles.
    * Note: requires user to be authenticated due to function JWT verification.
    * @param {Object} event
@@ -771,6 +1000,151 @@ export const dbService = {
       return { success: true }
     } catch (error) {
       console.error('Error sending blog analytics event:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * List blog articles with optional status filter and pagination.
+   * @param {{status?: 'all'|'draft'|'scheduled'|'published'|'archived', search?: string, page?: number, pageSize?: number}} params
+   * @returns {Promise<{success:boolean, data?:{items:any[], total:number, page:number, pageSize:number}, error?:string}>}
+   */
+  async listBlogArticles(params = {}) {
+    try {
+      const status = params.status || 'all'
+      const page = Math.max(1, Number(params.page) || 1)
+      const pageSize = Math.max(1, Math.min(50, Number(params.pageSize) || 10))
+      const search = (params.search || '').trim()
+
+      if (!isSupabaseConfigured) {
+        // Simulated data for unit tests and local dev: 3 drafts, 1 scheduled, 1 published
+        const simulated = [
+          { id: 'draft-1', title: 'Brouillon 1', status: 'draft', updated_at: new Date().toISOString() },
+          { id: 'draft-2', title: 'Brouillon 2', status: 'draft', updated_at: new Date().toISOString() },
+          { id: 'draft-3', title: 'Brouillon 3', status: 'draft', updated_at: new Date().toISOString() },
+          { id: 'sched-1', title: 'Planifié', status: 'scheduled', updated_at: new Date().toISOString() },
+          { id: 'pub-1', title: 'Publié', status: 'published', updated_at: new Date().toISOString() },
+        ]
+        let filtered = simulated
+        if (status !== 'all') filtered = filtered.filter((a) => a.status === status)
+        if (search) filtered = filtered.filter((a) => a.title.toLowerCase().includes(search.toLowerCase()))
+        const start = (page - 1) * pageSize
+        const items = filtered.slice(start, start + pageSize)
+        return { success: true, data: { items, total: filtered.length, page, pageSize } }
+      }
+
+      let query = supabase
+        .from('blog_articles')
+        .select('id, title, slug, status, updated_at, meta_title, meta_description, category_id, author_id', { count: 'exact' })
+      if (status !== 'all') query = query.eq('status', status)
+      if (search) query = query.ilike('title', `%${search}%`)
+      query = query.order('updated_at', { ascending: false })
+
+      const from = (page - 1) * pageSize
+      const to = from + pageSize - 1
+      const { data, error, count } = await query.range(from, to)
+      if (error) throw error
+
+      return {
+        success: true,
+        data: {
+          items: data || [],
+          total: typeof count === 'number' ? count : (data?.length || 0),
+          page,
+          pageSize,
+        },
+      }
+    } catch (error) {
+      console.error('Error listing blog articles:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * Fetch a single blog article by id.
+   */
+  async getBlogArticleById(id) {
+    try {
+      if (!id) throw new Error('Article ID is required')
+      if (!isSupabaseConfigured) {
+        return { success: true, data: { id, title: 'Brouillon', slug: 'brouillon', status: 'draft', content: '# Draft', markdown_content: '# Draft', meta_title: 'Brouillon', meta_description: 'Extrait', category_id: null, cover_image_url: null, tags: [] } }
+      }
+      const { data, error } = await supabase.from('blog_articles').select('*').eq('id', id).single()
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error fetching blog article by id:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * Update an existing draft (by id) or insert if not exists, preserving status=draft.
+   */
+  async upsertBlogDraft(id, payload) {
+    try {
+      const now = new Date().toISOString()
+      if (!isSupabaseConfigured) {
+        return { success: true, data: { id: id || 'local-draft', status: 'draft', ...payload, updated_at: now } }
+      }
+
+      const base = { updated_at: now }
+      // Only set fields when explicitly provided to avoid clearing content
+      if (typeof payload.content !== 'undefined') {
+        base.content = payload.content
+        base.markdown_content = payload.content
+      }
+      if (typeof payload.meta_title !== 'undefined') base.meta_title = payload.meta_title || null
+      if (typeof payload.meta_description !== 'undefined') base.meta_description = payload.meta_description || null
+      if (typeof payload.canonical_url !== 'undefined') base.canonical_url = payload.canonical_url || null
+      if (typeof payload.category_id !== 'undefined') base.category_id = payload.category_id || null
+      if (typeof payload.cover_image_url !== 'undefined') base.cover_image_url = payload.cover_image_url || null
+
+      // if id provided, update; else insert
+      if (id) {
+        const { data, error } = await supabase
+          .from('blog_articles')
+          .update({ ...base, status: 'draft' })
+          .eq('id', id)
+          .select('*')
+          .single()
+        if (error) throw error
+        if (Array.isArray(payload.tag_ids)) {
+          await this.setArticleTags(data.id, payload.tag_ids)
+        }
+        return { success: true, data }
+      } else {
+        const insert = await this.saveBlogDraft(payload)
+        if (!insert.success) return insert
+        if (Array.isArray(payload.tag_ids)) {
+          await this.setArticleTags(insert.data.id, payload.tag_ids)
+        }
+        return insert
+      }
+    } catch (error) {
+      console.error('Error upserting blog draft:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * Get tag IDs for an article from blog_article_tags
+   * @param {string} articleId
+   * @returns {Promise<{success:boolean, data:string[]}|{success:false,error:string}>}
+   */
+  async getArticleTagIds(articleId) {
+    try {
+      if (!articleId) return { success: true, data: [] }
+      if (!isSupabaseConfigured) return { success: true, data: [] }
+      const { data, error } = await supabase
+        .from('blog_article_tags')
+        .select('tag_id')
+        .eq('article_id', articleId)
+      if (error) throw error
+      const tagIds = Array.isArray(data) ? data.map((r) => r.tag_id).filter(Boolean) : []
+      return { success: true, data: tagIds }
+    } catch (error) {
+      console.error('Error fetching article tag ids:', error)
       return { success: false, error: error.message }
     }
   },
