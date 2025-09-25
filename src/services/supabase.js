@@ -1005,6 +1005,33 @@ export const dbService = {
   },
 
   /**
+   * Schedule an article by setting status to 'scheduled' and scheduled_at.
+   */
+  async scheduleArticle(articleId, payload) {
+    try {
+      const now = new Date().toISOString()
+      if (!isSupabaseConfigured) {
+        return { success: true, data: { id: articleId || 'local', status: 'scheduled', scheduled_at: payload?.scheduled_at || now } }
+      }
+      const { data, error } = await supabase
+        .from('blog_articles')
+        .update({
+          status: 'scheduled',
+          scheduled_at: payload?.scheduled_at || now,
+          updated_at: now,
+        })
+        .eq('id', articleId)
+        .select('*')
+        .single()
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error scheduling article:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
    * List blog articles with optional status filter and pagination.
    * @param {{status?: 'all'|'draft'|'scheduled'|'published'|'archived', search?: string, page?: number, pageSize?: number}} params
    * @returns {Promise<{success:boolean, data?:{items:any[], total:number, page:number, pageSize:number}, error?:string}>}

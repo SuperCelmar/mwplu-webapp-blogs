@@ -3,6 +3,7 @@
 - Blogs[status]: Added new article status 'ready' to workflow (draft → ready → scheduled/published → archived). Updated docs schema and created idempotent SQL migration `docs/blogs/BLOG_ADD_READY_STATUS.sql` to extend CHECK constraint.
 - Frontend[editor]: Save button now marks article as ready when metadata is complete. Implemented `dbService.markArticleReady` and wired in `PreviewBlogEditor.vue` and `BlogArticleEditorView.vue`. Shows success toast and redirects to dashboard after 1s.
 - Tests: Updated `src/views/dev/blog/__tests__/PreviewBlogEditor.spec.js` to expect mark-ready behavior and redirect.
+- Admin[editor]: When article status is `ready`, the primary action becomes "Planifier"; opens `BlogScheduleModal` to set `scheduled_at` and auto-publish flag; on save calls `dbService.scheduleArticle` and redirects after 1s. Added tests in `src/views/admin/__tests__/BlogArticleEditorView.spec.js`.
 
 - Add global `GlobalNotification` mount in `src/App.vue` to ensure toasts appear across routes
 - Instrument blog draft flow: debug logs and success/error toasts in `PreviewBlogEditor.vue`

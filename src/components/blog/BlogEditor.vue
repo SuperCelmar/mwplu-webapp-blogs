@@ -11,7 +11,7 @@
           Enregistrer Brouillon
         </button>
         <button class="btn" type="button" :disabled="!canPublish" data-test="action-publish" @click="emitPublish">
-          Enregistrer l’article
+          {{ actionLabel }}
         </button>
       </div>
     </header>
@@ -57,6 +57,7 @@ const props = defineProps({
   canPublish: { type: Boolean, default: false },
   metadata: { type: Object, default: () => ({}) },
   initialContent: { type: String, default: '' },
+  actionLabel: { type: String, default: 'Enregistrer l’article' },
 })
 
 const content = ref('')

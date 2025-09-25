@@ -37,7 +37,7 @@
             <td><span class="badge">{{ a.status }}</span></td>
             <td>{{ formatDate(a.updated_at) }}</td>
             <td style="text-align:right;">
-              <button class="btn-secondary" @click="continueEditing(a)" data-test="action-edit">Continuer l’édition</button>
+              <button class="btn-secondary" @click="continueEditing(a)" data-test="action-edit">{{ a.status === 'ready' ? 'Planifier' : 'Continuer l’édition' }}</button>
             </td>
           </tr>
         </tbody>
@@ -81,7 +81,8 @@ function next() { page.value += 1; load() }
 
 function continueEditing(article) {
   if (article?.id) {
-    router.push({ name: 'admin-blog-editor', params: { id: article.id } })
+    const query = article.status === 'ready' ? { action: 'schedule' } : {}
+    router.push({ name: 'admin-blog-editor', params: { id: article.id }, query })
   }
 }
 
