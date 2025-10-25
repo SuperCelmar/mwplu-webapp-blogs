@@ -1,9 +1,11 @@
 import { ref } from 'vue'
 import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 
 export function useAiChat() {
   const isLoading = ref(false)
   const error = ref(null)
+  const authStore = useAuthStore()
 
   const sendMessage = async (message, documentId) => {
     if (!message || !message.trim()) {
@@ -16,6 +18,11 @@ export function useAiChat() {
       return { success: false, error: error.value }
     }
 
+    if (!authStore.userId) {
+      error.value = 'Utilisateur non authentifié'
+      return { success: false, error: error.value }
+    }
+
     isLoading.value = true
     error.value = null
 
@@ -25,6 +32,7 @@ export function useAiChat() {
         {
           message: message.trim(),
           document_id: documentId,
+          user_id: authStore.userId,
         },
         {
           headers: {
