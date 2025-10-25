@@ -128,6 +128,11 @@
         <img src="@/assets/icons/elements/arrow-up.svg" alt="Retour en haut" class="back-to-top-icon" color="white"
           width="20" height="20" />
       </button>
+
+      <!-- AI Chat Input (only shown when document is loaded) -->
+      <div v-if="pluData" class="ai-chat-input-fixed">
+        <AiChatInput :document-id="pluData.id" />
+      </div>
     </div>
   </AppLayout>
 </template>
@@ -144,6 +149,7 @@ import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 import BaseSpinner from '@/components/common/BaseSpinner.vue'
 import PluCommentsTab from '@/components/plu/synthesis/PluCommentsTab.vue'
 import PluSourcesTab from '@/components/plu/synthesis/PluSourcesTab.vue'
+import AiChatInput from '@/components/common/AiChatInput.vue'
 import { formatCityName } from '@/utils/helpers'
 
 export default {
@@ -155,6 +161,7 @@ export default {
     BaseSpinner,
     PluCommentsTab,
     PluSourcesTab,
+    AiChatInput,
   },
 
   setup() {
@@ -1418,6 +1425,35 @@ export default {
     width: 44px;
     height: 44px;
     font-size: var(--font-size-md);
+  }
+}
+
+/* AI Chat Input Fixed Positioning */
+.ai-chat-input-fixed {
+  position: fixed;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 48rem;
+  z-index: 900;
+  padding: 0 var(--space-4);
+}
+
+/* Add bottom padding to content to prevent overlap */
+.plu-details-view {
+  padding-bottom: 120px;
+}
+
+/* Responsive adjustment for mobile */
+@media (max-width: 768px) {
+  .ai-chat-input-fixed {
+    bottom: var(--space-4);
+    padding: 0 var(--space-3);
+  }
+
+  .plu-details-view {
+    padding-bottom: 100px;
   }
 }
 </style>
