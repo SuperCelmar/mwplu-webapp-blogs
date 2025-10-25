@@ -20,6 +20,7 @@ export const contactService = {
    * @param {string} formData.email - User's email
    * @param {string} formData.subject - Message subject
    * @param {string} formData.message - Message content
+   * @param {string} [formData.user_id] - Optional user ID if authenticated
    * @returns {Promise<Object>} Response object
    */
   async submitMessage(formData) {
@@ -33,6 +34,7 @@ export const contactService = {
             email: formData.email,
             subject: formData.subject,
             message: formData.message,
+            user_id: formData.user_id || null,
             status: 'pending',
             created_at: new Date().toISOString(),
           },
@@ -78,34 +80,44 @@ export const contactService = {
     }
 
     try {
+      const fields = [
+        {
+          name: '👤 Nom',
+          value: formData.name,
+          inline: true,
+        },
+        {
+          name: '📧 Email',
+          value: formData.email,
+          inline: true,
+        },
+        {
+          name: '📝 Sujet',
+          value: formData.subject,
+          inline: false,
+        },
+        {
+          name: '💬 Message',
+          value:
+            formData.message.length > 1000
+              ? formData.message.substring(0, 1000) + '...'
+              : formData.message,
+          inline: false,
+        },
+      ]
+
+      if (formData.user_id) {
+        fields.push({
+          name: '🔑 User ID',
+          value: formData.user_id,
+          inline: true,
+        })
+      }
+
       const embed = {
-        title: `📩 Nouveau message de contact`,
-        color: 0x3b82f6, // Blue color
-        fields: [
-          {
-            name: '👤 Nom',
-            value: formData.name,
-            inline: true,
-          },
-          {
-            name: '📧 Email',
-            value: formData.email,
-            inline: true,
-          },
-          {
-            name: '📝 Sujet',
-            value: formData.subject,
-            inline: false,
-          },
-          {
-            name: '💬 Message',
-            value:
-              formData.message.length > 1000
-                ? formData.message.substring(0, 1000) + '...'
-                : formData.message,
-            inline: false,
-          },
-        ],
+        title: `📩 Nouveau message de contact${formData.user_id ? ' (Utilisateur authentifié)' : ' (Anonyme)'}`,
+        color: formData.user_id ? 0x10b981 : 0x3b82f6,
+        fields,
         footer: {
           text: messageId ? `ID: ${messageId}` : 'MWPLU Contact Form',
         },

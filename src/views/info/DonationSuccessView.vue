@@ -53,6 +53,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUIStore } from '@/stores/ui'
+import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 
@@ -67,6 +68,7 @@ export default {
   setup() {
     const route = useRoute()
     const uiStore = useUIStore()
+    const authStore = useAuthStore()
 
     const donationAmount = ref('')
     const donationId = ref('')
@@ -77,7 +79,7 @@ export default {
     ]
 
     // Extract donation details from URL parameters if available
-    onMounted(() => {
+    onMounted(async () => {
       const { amount, session_id, payment_intent } = route.query
 
       if (amount) {
@@ -88,6 +90,22 @@ export default {
         donationId.value = session_id
       } else if (payment_intent) {
         donationId.value = payment_intent
+      }
+
+      // Track the donation in database with user ID if available
+      if (donationId.value && donationAmount.value) {
+        try {
+          const { trackDonation } = await import('@/services/donationService')
+          await trackDonation({
+            amount: parseFloat(donationAmount.value),
+            reference: donationId.value,
+            email: authStore.userEmail || 'anonymous@example.com',
+            paymentMethod: 'stripe',
+            user_id: authStore.userId || null
+          })
+        } catch (error) {
+          console.error('Error tracking donation:', error)
+        }
       }
 
       // Show success notification

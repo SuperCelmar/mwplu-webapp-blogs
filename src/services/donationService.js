@@ -150,6 +150,7 @@ export async function sendDonationSuccessEmail(donationData) {
 /**
  * Track donation for analytics
  * @param {Object} donationData - Donation information
+ * @param {string} [donationData.user_id] - Optional user ID if authenticated
  * @returns {Promise<Object>} Tracking result
  */
 export async function trackDonation(donationData) {
@@ -160,7 +161,9 @@ export async function trackDonation(donationData) {
         reference: donationData.reference,
         email: donationData.email,
         payment_method: donationData.paymentMethod || 'stripe',
+        user_id: donationData.user_id || null,
         status: 'completed',
+        currency: donationData.currency || 'eur',
         created_at: new Date().toISOString(),
       },
     ])
