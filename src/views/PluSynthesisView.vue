@@ -128,9 +128,6 @@
         <img src="@/assets/icons/elements/arrow-up.svg" alt="Retour en haut" class="back-to-top-icon" color="white"
           width="20" height="20" />
       </button>
-
-      <!-- AI Chat Overlay -->
-      <AIChatOverlay v-if="pluData" :document-id="pluData.id" />
     </div>
   </AppLayout>
 </template>
@@ -147,7 +144,6 @@ import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 import BaseSpinner from '@/components/common/BaseSpinner.vue'
 import PluCommentsTab from '@/components/plu/synthesis/PluCommentsTab.vue'
 import PluSourcesTab from '@/components/plu/synthesis/PluSourcesTab.vue'
-import AIChatOverlay from '@/components/plu/AIChatOverlay.vue'
 import { formatCityName } from '@/utils/helpers'
 
 export default {
@@ -159,7 +155,6 @@ export default {
     BaseSpinner,
     PluCommentsTab,
     PluSourcesTab,
-    AIChatOverlay,
   },
 
   setup() {
