@@ -128,7 +128,6 @@
 <script>
 import { ref, reactive, computed } from 'vue'
 import { useUIStore } from '@/stores/ui'
-import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 import BaseSpinner from '@/components/common/BaseSpinner.vue'
@@ -144,7 +143,6 @@ export default {
 
   setup() {
     const uiStore = useUIStore()
-    const authStore = useAuthStore()
 
     const isSubmitting = ref(false)
 
@@ -171,13 +169,8 @@ export default {
       try {
         // Import contact service dynamically to avoid import errors
         const { contactService } = await import('@/services/contactService')
-
-        const formDataWithUserId = {
-          ...form,
-          user_id: authStore.userId || null
-        }
-
-        const result = await contactService.submitMessage(formDataWithUserId)
+        
+        const result = await contactService.submitMessage(form)
 
         if (result.success) {
           const methodText = {
@@ -185,7 +178,7 @@ export default {
           }[result.method] || 'notre système'
 
           uiStore.showNotification(
-            `Votre message a été envoyé avec succès via ${methodText}. Nous vous répondrons bientôt.`,
+            `Votre message a été envoyé avec succès via ${methodText}. Nous vous répondrons bientôt.`, 
             'success'
           )
 
@@ -203,7 +196,7 @@ export default {
       } catch (error) {
         console.error('Contact form submission error:', error)
         uiStore.showNotification(
-          error.message || 'Erreur lors de l\'envoi du message. Veuillez réessayer ou nous contacter directement.',
+          error.message || 'Erreur lors de l\'envoi du message. Veuillez réessayer ou nous contacter directement.', 
           'error'
         )
       } finally {
