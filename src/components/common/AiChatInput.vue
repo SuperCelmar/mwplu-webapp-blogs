@@ -1,6 +1,6 @@
 <template>
   <div class="ai-chat-input-wrapper">
-    <form @submit.prevent="handleSubmit" class="ai-chat-input-container" @click="handleInputClick">
+    <form @submit.prevent="handleSubmit" class="ai-chat-input-container">
       <input
         ref="inputRef"
         v-model="inputValue"
@@ -9,7 +9,6 @@
         :disabled="isLoading || disabled"
         class="ai-chat-input"
         @keydown.enter.exact.prevent="handleSubmit"
-        @click.stop="handleInputClick"
       />
       <button
         type="submit"
@@ -24,8 +23,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, defineProps } from 'vue'
 import { ArrowUp } from 'lucide-vue-next'
+import { useAiChat } from '@/composables/useAiChat'
+import { useUIStore } from '@/stores/ui'
 
 const props = defineProps({
   documentId: {
@@ -40,34 +41,33 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isLoading: {
-    type: Boolean,
-    default: false,
-  },
-  hasMessages: {
-    type: Boolean,
-    default: false,
-  },
 })
-
-const emit = defineEmits(['submit', 'input-click'])
 
 const inputRef = ref(null)
 const inputValue = ref('')
+const uiStore = useUIStore()
+const { isLoading, sendMessage } = useAiChat()
 
-const handleSubmit = () => {
-  if (!inputValue.value.trim() || props.isLoading || props.disabled) {
+const handleSubmit = async () => {
+  if (!inputValue.value.trim() || isLoading.value || props.disabled) {
     return
   }
 
   const message = inputValue.value.trim()
-  emit('submit', message)
-  inputValue.value = ''
-}
+  const result = await sendMessage(message, props.documentId)
 
-const handleInputClick = () => {
-  if (props.hasMessages) {
-    emit('input-click')
+  if (result.success) {
+    inputValue.value = ''
+    if (inputRef.value) {
+      inputRef.value.focus()
+    }
+  } else {
+    uiStore.showNotification({
+      type: 'error',
+      message: result.error || 'Erreur lors de l\'envoi du message',
+      autoDismiss: true,
+      autoDismissDelay: 5000,
+    })
   }
 }
 </script>

@@ -18,7 +18,6 @@ import './styles/utilities.css'
 import './styles/forms.css'
 import './styles/buttons.css'
 import './styles/messages.css'
-import './styles/chat.css'
 
 const app = createApp(App)
 

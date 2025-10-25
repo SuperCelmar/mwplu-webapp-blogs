@@ -131,25 +131,8 @@
 
       <!-- AI Chat Input (only shown when document is loaded) -->
       <div v-if="pluData" class="ai-chat-input-fixed">
-        <AiChatInput
-          :document-id="pluData.id"
-          :is-loading="chatSession.isLoading"
-          :has-messages="chatSession.hasMessages"
-          @submit="handleChatSubmit"
-          @input-click="handleInputClick"
-        />
+        <AiChatInput :document-id="pluData.id" />
       </div>
-
-      <!-- Chat Popup -->
-      <ChatPopup
-        :is-open="chatSession.isPopupOpen"
-        :messages="chatSession.messages"
-        :is-loading="chatSession.isLoading"
-        :user-name="userName"
-        :document-name="documentName"
-        @close="chatSession.closePopup"
-        @send-message="handleChatSubmit"
-      />
     </div>
   </AppLayout>
 </template>
@@ -161,15 +144,12 @@ import { useAuthStore } from '@/stores/auth'
 import { useUIStore } from '@/stores/ui'
 import { usePluStore } from '@/stores/plu'
 import { dbService } from '@/services/supabase'
-import { useChatSession } from '@/composables/useChatSession'
-import { useAiChat } from '@/composables/useAiChat'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 import BaseSpinner from '@/components/common/BaseSpinner.vue'
 import PluCommentsTab from '@/components/plu/synthesis/PluCommentsTab.vue'
 import PluSourcesTab from '@/components/plu/synthesis/PluSourcesTab.vue'
 import AiChatInput from '@/components/common/AiChatInput.vue'
-import ChatPopup from '@/components/chat/ChatPopup.vue'
 import { formatCityName } from '@/utils/helpers'
 
 export default {
@@ -182,7 +162,6 @@ export default {
     PluCommentsTab,
     PluSourcesTab,
     AiChatInput,
-    ChatPopup,
   },
 
   setup() {
@@ -194,21 +173,9 @@ export default {
     const isLoading = ref(true)
     const errorMessage = ref('')
     const pluData = ref(null)
-    const activeTab = ref('synthesis')
+    const activeTab = ref('synthesis') // Default active tab
     const documentStats = ref(null)
     const userDownloadInfo = ref({ used: 0, remaining: 5, allowed: 5 })
-
-    const chatSession = useChatSession(computed(() => pluData.value?.id))
-    const { sendMessage } = useAiChat()
-
-    const userName = computed(() => {
-      return authStore.user?.user_metadata?.full_name || authStore.user?.email?.split('@')[0] || 'Utilisateur'
-    })
-
-    const documentName = computed(() => {
-      if (!pluData.value) return ''
-      return `PLU ${pluData.value.city_name} - ${pluData.value.zone_name}`
-    })
 
     // Back to top functionality
     const showBackToTop = ref(false)
@@ -471,109 +438,10 @@ export default {
       showBackToTop.value = window.scrollY > 300
     }
 
-    /**
-     * Handles chat input click - opens popup if there are existing messages
-     */
-    const handleInputClick = () => {
-      if (chatSession.hasMessages.value) {
-        chatSession.openPopup()
-      }
-    }
-
-    /**
-     * Handles chat message submission
-     */
-    const handleChatSubmit = async (message) => {
-      if (!pluData.value || !authStore.userId) {
-        uiStore.showNotification({
-          type: 'error',
-          message: 'Veuillez vous connecter pour utiliser le chat',
-          autoDismiss: true,
-          autoDismissDelay: 5000,
-        })
-        return
-      }
-
-      chatSession.setLoading(true)
-      chatSession.addUserMessage(message)
-
-      if (!chatSession.isPopupOpen.value) {
-        chatSession.openPopup()
-      }
-
-      try {
-        let session = chatSession.sessionId.value
-        if (!session) {
-          const sessionResult = await dbService.getChatSession(authStore.userId, String(pluData.value.id))
-          if (sessionResult.success && sessionResult.data) {
-            session = sessionResult.data.id
-            chatSession.setSessionId(session)
-          } else {
-            const createResult = await dbService.createChatSession(authStore.userId, String(pluData.value.id))
-            if (createResult.success) {
-              session = createResult.data.id
-              chatSession.setSessionId(session)
-            }
-          }
-        }
-
-        if (session) {
-          await dbService.saveChatMessage(session, authStore.userId, String(pluData.value.id), 'user', message)
-        }
-
-        const result = await sendMessage(message, pluData.value.id)
-
-        if (result.success) {
-          const assistantMessage = result.message || result.data?.response || result.data?.message || 'Réponse reçue'
-          chatSession.addAssistantMessage(assistantMessage)
-
-          if (session) {
-            await dbService.saveChatMessage(session, authStore.userId, String(pluData.value.id), 'assistant', assistantMessage)
-          }
-        } else {
-          chatSession.addAssistantMessage('Désolé, une erreur est survenue lors du traitement de votre demande.')
-          uiStore.showNotification({
-            type: 'error',
-            message: result.error || 'Erreur lors de l\'envoi du message',
-            autoDismiss: true,
-            autoDismissDelay: 5000,
-          })
-        }
-      } catch (error) {
-        console.error('Error in chat submit:', error)
-        chatSession.addAssistantMessage('Une erreur est survenue. Veuillez réessayer.')
-        uiStore.showNotification({
-          type: 'error',
-          message: 'Erreur lors de la communication avec le serveur',
-          autoDismiss: true,
-          autoDismissDelay: 5000,
-        })
-      } finally {
-        chatSession.setLoading(false)
-      }
-    }
-
-    /**
-     * Loads existing chat messages for the current document
-     */
-    const loadChatHistory = async () => {
-      if (!pluData.value || !authStore.userId) return
-
-      try {
-        const result = await dbService.getChatMessagesByDocument(authStore.userId, String(pluData.value.id))
-        if (result.success && result.data && result.data.length > 0) {
-          chatSession.loadMessages(result.data)
-        }
-      } catch (error) {
-        console.error('Error loading chat history:', error)
-      }
-    }
-
     // Load data on component mount and when route changes
     onMounted(async () => {
-      await loadPluData()
+      loadPluData()
       await loadUserDownloadInfo()
-      await loadChatHistory()
       // Show smart-match reminder if present
       if (pluStore.lastSmartMatch?.usedSmartMatch && pluStore.lastSmartMatch.externalZoneLabel) {
         uiStore.showInfo(
@@ -619,10 +487,9 @@ export default {
       authStore,
       pluStore,
       documentStats,
+      // Back to top functionality
       showBackToTop,
-      chatSession,
-      userName,
-      documentName,
+      // Methods
       loadPluData,
       loadDocumentStats,
       loadUserDownloadInfo,
@@ -633,8 +500,6 @@ export default {
       formatDate,
       formatFileSize,
       userDownloadInfo,
-      handleChatSubmit,
-      handleInputClick,
     }
   },
 }
