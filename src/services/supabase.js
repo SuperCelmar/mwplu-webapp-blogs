@@ -698,4 +698,184 @@ export const dbService = {
       return { success: false, error: error.message }
     }
   },
+
+  // Chat operations
+  /**
+   * Get or create a chat session for a user and document
+   * @param {string} userId - The user ID
+   * @param {string} documentId - The document ID
+   * @returns {Promise<{success: boolean, data: Object}>}
+   */
+  async getOrCreateChatSession(userId, documentId) {
+    try {
+      if (!userId || !documentId) {
+        throw new Error('User ID and document ID are required')
+      }
+
+      // Check for existing active session
+      const { data: existingSession, error: fetchError } = await supabase
+        .from('chat_sessions')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('document_id', documentId)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      if (fetchError) throw fetchError
+
+      if (existingSession) {
+        return { success: true, data: existingSession }
+      }
+
+      // Create new session
+      const { data: newSession, error: insertError } = await supabase
+        .from('chat_sessions')
+        .insert({
+          user_id: userId,
+          document_id: documentId,
+          is_active: true,
+        })
+        .select()
+        .single()
+
+      if (insertError) throw insertError
+      return { success: true, data: newSession }
+    } catch (error) {
+      console.error('Error getting or creating chat session:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * Get chat messages for a session
+   * @param {string} sessionId - The session ID
+   * @returns {Promise<{success: boolean, data: Array}>}
+   */
+  async getChatMessages(sessionId) {
+    try {
+      if (!sessionId) {
+        throw new Error('Session ID is required')
+      }
+
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('session_id', sessionId)
+        .order('created_at', { ascending: true })
+
+      if (error) throw error
+      return { success: true, data: data || [] }
+    } catch (error) {
+      console.error('Error fetching chat messages:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * Save a chat message
+   * @param {string} sessionId - The session ID
+   * @param {string} userId - The user ID
+   * @param {string} documentId - The document ID
+   * @param {string} role - Message role ('user' or 'assistant')
+   * @param {string} message - The message content
+   * @param {Object} metadata - Optional metadata
+   * @returns {Promise<{success: boolean, data: Object}>}
+   */
+  async saveChatMessage(sessionId, userId, documentId, role, message, metadata = {}) {
+    try {
+      if (!sessionId || !userId || !documentId || !role || !message) {
+        throw new Error('Session ID, user ID, document ID, role, and message are required')
+      }
+
+      if (role !== 'user' && role !== 'assistant') {
+        throw new Error('Role must be either "user" or "assistant"')
+      }
+
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .insert({
+          session_id: sessionId,
+          user_id: userId,
+          document_id: documentId,
+          role,
+          message: message.trim(),
+          metadata,
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+
+      // Update session's last_message_at
+      await supabase
+        .from('chat_sessions')
+        .update({ last_message_at: new Date().toISOString() })
+        .eq('id', sessionId)
+
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error saving chat message:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  /**
+   * Check if user has an active chat session for a document
+   * @param {string} userId - The user ID
+   * @param {string} documentId - The document ID
+   * @returns {Promise<{success: boolean, hasSession: boolean, sessionId: string|null}>}
+   */
+  async hasActiveChatSession(userId, documentId) {
+    try {
+      if (!userId || !documentId) {
+        return { success: true, hasSession: false, sessionId: null }
+      }
+
+      const { data, error } = await supabase
+        .from('chat_sessions')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('document_id', documentId)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle()
+
+      if (error) throw error
+
+      return {
+        success: true,
+        hasSession: !!data,
+        sessionId: data?.id || null,
+      }
+    } catch (error) {
+      console.error('Error checking for active chat session:', error)
+      return { success: false, hasSession: false, sessionId: null, error: error.message }
+    }
+  },
+
+  /**
+   * Clear/deactivate a chat session
+   * @param {string} sessionId - The session ID
+   * @returns {Promise<{success: boolean}>}
+   */
+  async deactivateChatSession(sessionId) {
+    try {
+      if (!sessionId) {
+        throw new Error('Session ID is required')
+      }
+
+      const { error } = await supabase
+        .from('chat_sessions')
+        .update({ is_active: false })
+        .eq('id', sessionId)
+
+      if (error) throw error
+      return { success: true }
+    } catch (error) {
+      console.error('Error deactivating chat session:', error)
+      return { success: false, error: error.message }
+    }
+  },
 }

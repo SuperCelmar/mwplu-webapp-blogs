@@ -133,6 +133,13 @@
       <div v-if="pluData" class="ai-chat-input-fixed">
         <AiChatInput :document-id="pluData.id" />
       </div>
+
+      <!-- AI Chat Widget Popup -->
+      <AiChatWidget
+        v-if="pluData"
+        :document-id="pluData.id"
+        :document-name="`PLU ${pluData.city_name} - ${pluData.zone_name}`"
+      />
     </div>
   </AppLayout>
 </template>
@@ -143,6 +150,7 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUIStore } from '@/stores/ui'
 import { usePluStore } from '@/stores/plu'
+import { useChatStore } from '@/stores/chat'
 import { dbService } from '@/services/supabase'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
@@ -150,6 +158,7 @@ import BaseSpinner from '@/components/common/BaseSpinner.vue'
 import PluCommentsTab from '@/components/plu/synthesis/PluCommentsTab.vue'
 import PluSourcesTab from '@/components/plu/synthesis/PluSourcesTab.vue'
 import AiChatInput from '@/components/common/AiChatInput.vue'
+import AiChatWidget from '@/components/chat/AiChatWidget.vue'
 import { formatCityName } from '@/utils/helpers'
 
 export default {
@@ -162,6 +171,7 @@ export default {
     PluCommentsTab,
     PluSourcesTab,
     AiChatInput,
+    AiChatWidget,
   },
 
   setup() {
@@ -169,6 +179,7 @@ export default {
     const authStore = useAuthStore()
     const uiStore = useUIStore()
     const pluStore = usePluStore()
+    const chatStore = useChatStore()
 
     const isLoading = ref(true)
     const errorMessage = ref('')
@@ -462,6 +473,7 @@ export default {
       (newParams, oldParams) => {
         // Only reload if relevant route params change
         if (newParams.city !== oldParams.city || newParams.zoning !== oldParams.zoning || newParams.zone !== oldParams.zone) {
+          chatStore.resetChat()
           loadPluData()
           // Re-emit reminder after navigation change if smart-match persisted
           if (pluStore.lastSmartMatch?.usedSmartMatch && pluStore.lastSmartMatch.externalZoneLabel) {

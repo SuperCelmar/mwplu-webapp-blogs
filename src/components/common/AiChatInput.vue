@@ -1,6 +1,6 @@
 <template>
   <div class="ai-chat-input-wrapper">
-    <form @submit.prevent="handleSubmit" class="ai-chat-input-container">
+    <form @submit.prevent="handleSubmit" class="ai-chat-input-container" @click="handleInputClick">
       <input
         ref="inputRef"
         v-model="inputValue"
@@ -9,6 +9,7 @@
         :disabled="isLoading || disabled"
         class="ai-chat-input"
         @keydown.enter.exact.prevent="handleSubmit"
+        @focus="handleInputFocus"
       />
       <button
         type="submit"
@@ -23,10 +24,11 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ArrowUp } from 'lucide-vue-next'
 import { useAiChat } from '@/composables/useAiChat'
 import { useUIStore } from '@/stores/ui'
+import { useChatStore } from '@/stores/chat'
 
 const props = defineProps({
   documentId: {
@@ -46,7 +48,27 @@ const props = defineProps({
 const inputRef = ref(null)
 const inputValue = ref('')
 const uiStore = useUIStore()
+const chatStore = useChatStore()
 const { isLoading, sendMessage } = useAiChat()
+
+onMounted(async () => {
+  await chatStore.initializeChat(props.documentId)
+})
+
+const handleInputClick = () => {
+  if (chatStore.hasMessages) {
+    chatStore.openPopup()
+  }
+}
+
+const handleInputFocus = () => {
+  if (chatStore.hasMessages) {
+    chatStore.openPopup()
+    if (inputRef.value) {
+      inputRef.value.blur()
+    }
+  }
+}
 
 const handleSubmit = async () => {
   if (!inputValue.value.trim() || isLoading.value || props.disabled) {
